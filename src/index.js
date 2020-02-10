@@ -1,10 +1,17 @@
 /* eslint-disable quotes */
-const express = require("express");
+// make bluebird defalut promise
+// eslint-disable-next-line no-global-assign
+Promise = require("bluebird");
+const { port, env } = require("./config/vars");
+const logger = require("./config/logger");
+const app = require("./config/express");
 
-// setup express App
-const app = express();
+// listen to request
+app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 
-// listen for request
-app.listen(process.env.port || 3000, () => {
-  console.log("Server created");
-});
+/*
+ * Exports express
+ * @public
+ */
+
+module.exports = app;
