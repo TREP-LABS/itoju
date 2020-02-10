@@ -9,7 +9,7 @@ const app = require("./config/express");
 // listen to request
 app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 
-/*
+/**
  * Exports express
  * @public
  */
