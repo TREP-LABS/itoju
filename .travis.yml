@@ -1,18 +1,36 @@
 language: node_js
-node_js:
-- stable
+
 cache:
   directories:
-  - node_modules
-jobs:
-  include:
-  - name: Unit Tests
-    stage: Testing/Static Analysis
-    script: 
-      - npm run test -- --forceExit --silent --testTimeout=10000 --maxWorkers=4
-      - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage # reporting coverage
-  - name: Linting
-    stage: Testing/Static Analysis
-    script: npm run lint
-stages:
-- Testing/Static Analysis
+    - ~/.npm
+    
+node_js:
+  - '8'
+  - '10'
+  - '12'
+  
+services:
+  - mongodb
+
+git:
+  depth: 3
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - NODE_ENV=test
+    - PORT=3000
+    - JWT_SECRET=bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4
+    - JWT_EXPIRATION_MINUTES=15
+    - MONGO_URI=mongodb://localhost/express-rest-es2017-boilerplate
+    - MONGO_URI_TESTS=mongodb://localhost/express-rest-es2017-boilerplate
+    - EMAIL_PORT=587
+    - EMAIL_HOST=smtp-relay.sendinblue.com
+    - EMAIL_USERNAME=smtp-username
+    - EMAIL_PASSWORD=smtp-password
+
+script: yarn validate
+after_success: yarn coverage

@@ -1,33 +1,166 @@
-# RealDrip Backend [![Build Status](https://travis-ci.org/TREP-LABS/realdrip-backend.svg?branch=master)](https://travis-ci.org/TREP-LABS/realdrip-backend)  [![Coverage Status](https://coveralls.io/repos/github/TREP-LABS/realdrip-backend/badge.svg?branch=master)](https://coveralls.io/github/TREP-LABS/realdrip-backend?branch=master)
+# Express ES2017 REST API Boilerplate
 
-> What is Itoju? Check [here](https://treplabs.co/Itoju)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![npm version](https://badge.fury.io/js/express-rest-es2017-boilerplate.svg)](https://badge.fury.io/js/express-rest-es2017-boilerplate) [![Build Status](https://travis-ci.org/danielfsousa/express-rest-es2017-boilerplate.svg?branch=master)](https://travis-ci.org/danielfsousa/express-rest-es2017-boilerplate) [![Coverage Status](https://coveralls.io/repos/github/danielfsousa/express-rest-es2017-boilerplate/badge.svg?branch=master)](https://coveralls.io/github/danielfsousa/express-rest-es2017-boilerplate?branch=master)
 
-This is the backend API for Itoju.
+Boilerplate/Generator/Starter Project for building RESTful APIs and microservices using Node.js, Express
 
-## API Documentation
-The API is well documented using the OpenAPI Spec(Swagger) [here](https://app.swaggerhub.com/apis/Treplabs/Realdrip_Platform/1.0#/).
+## Features
+
+- No transpilers, just vanilla javascript
+- ES2017 latest features like Async/Await
+- CORS enabled
+- Uses [yarn](https://yarnpkg.com)
+- Express + MongoDB ([Mongoose](http://mongoosejs.com/))
+- Consistent coding styles with [editorconfig](http://editorconfig.org)
+- [Docker](https://www.docker.com/) support
+- Uses [helmet](https://github.com/helmetjs/helmet) to set some HTTP headers for security
+- Load environment variables from .env files with [dotenv](https://github.com/rolodato/dotenv-safe)
+- Request validation with [joi](https://github.com/hapijs/joi)
+- Gzip compression with [compression](https://github.com/expressjs/compression)
+- Linting with [eslint](http://eslint.org)
+- Tests with [mocha](https://mochajs.org), [chai](http://chaijs.com) and [sinon](http://sinonjs.org)
+- Code coverage with [istanbul](https://istanbul.js.org) and [coveralls](https://coveralls.io)
+- Git hooks with [husky](https://github.com/typicode/husky)
+- Logging with [morgan](https://github.com/expressjs/morgan)
+- Authentication and Authorization with [passport](http://passportjs.org)
+- API documentation generation with [apidoc](http://apidocjs.com)
+- Continuous integration support with [travisCI](https://travis-ci.org)
+- Monitoring with [pm2](https://github.com/Unitech/pm2)
+
+## Requirements
+
+- [Node v7.6+](https://nodejs.org/en/download/current/) or [Docker](https://www.docker.com/)
+- [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## Getting Started
-The instructions below would get the project up and running on your local machine
 
-### Prerequisite
-- Git
-- Node
-- npm or yarn
+#### Clone the repo and make it yours:
 
-### Installation
-- Clone the repository `git clone https://github.com/TREP-LABS/realdrip-backend.git`
-- Change into the directory of the project
-- run `npm install` on your preferred console to install all the dependency packages
-- Create a `.env` file in the root folder of the project to provide all the needed environment variables as specified in `.env.example`
-- run `npm run dev` to start the application in dev mode
+```bash
+git clone --depth 1 https://github.com/danielfsousa/express-rest-es2017-boilerplate
+cd express-rest-es2017-boilerplate
+rm -rf .git
+```
 
-## Testing
-The application features mostly integration tests for its different API endpoints, to run these tests, use `npm test`(at the root of the project).
-Becuase of our CI/CD practice, it's best that every single change to the codebase features one type of automated test or the other.
+#### Install dependencies:
 
-## Test Coverage
-We use [Coveralls](https://coveralls.io/) to report our test coverage data. We aim for 90%(or above) test coverage but we try our best not to go below 80%.
+```bash
+yarn
+```
 
-### TestRunner
-We added a bit of abstraction over the way we write automated integration tests. Most of the integration tests we write for the different API endpoints follows the same structure of simulating an Http request to the app and asserting the response body. Consequently, we created a testRunner utility that takes care of the details on sending request and asserting a response, all you need to do to test an endpoint is to compose testCases. More details on how to use the testRuner and compose testCases [here]().
+#### Set environment variables:
+
+```bash
+cp .env.example .env
+```
+
+## Running Locally
+
+```bash
+yarn dev
+```
+
+## Running in Production
+
+```bash
+yarn start
+```
+
+## Lint
+
+```bash
+# lint code with ESLint
+yarn lint
+
+# try to fix ESLint errors
+yarn lint:fix
+
+# lint and watch for changes
+yarn lint:watch
+```
+
+## Test
+
+```bash
+# run all tests with Mocha
+yarn test
+
+# run unit tests
+yarn test:unit
+
+# run integration tests
+yarn test:integration
+
+# run all tests and watch for changes
+yarn test:watch
+
+# open nyc test coverage reports
+yarn coverage
+```
+
+## Validate
+
+```bash
+# run lint and tests
+yarn validate
+```
+
+## Logs
+
+```bash
+# show logs in production
+pm2 logs
+```
+
+## Documentation
+
+```bash
+# generate and open api documentation
+yarn docs
+```
+
+## Docker
+
+```bash
+# run container locally
+yarn docker:dev
+
+# run container in production
+yarn docker:prod
+
+# run tests
+yarn docker:test
+```
+
+## Deploy
+
+Set your server ip:
+
+```bash
+DEPLOY_SERVER=127.0.0.1
+```
+
+Replace my Docker username with yours:
+
+```bash
+nano deploy.sh
+```
+
+Run deploy script:
+
+```bash
+yarn deploy
+```
+
+## Tutorials
+
+- [Create API Documentation Using Squarespace](https://selfaware.blog/home/2018/6/23/api-documentation)
+
+## Inspirations
+
+- [KunalKapadia/express-mongoose-es6-rest-api](https://github.com/KunalKapadia/express-mongoose-es6-rest-api)
+- [diegohaz/rest](https://github.com/diegohaz/rest)
+
+## License
+
+[MIT License](README.md) - [Daniel Sousa](https://github.com/danielfsousa)

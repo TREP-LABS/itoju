@@ -1,7 +1,10 @@
-import app from './config/app';
-import vars from './config/vars';
-import { log } from './api/utils/logger';
+/* eslint-disable quotes */
+const express = require("express");
 
-export default app.listen(vars.port, () => {
-  log.info(`App listening on port ${vars.port}`);
+// setup express App
+const app = express();
+
+// listen for request
+app.listen(process.env.port || 3000, () => {
+  console.log("Server created");
 });
