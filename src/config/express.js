@@ -12,6 +12,7 @@ const bodyparser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const logs = require('./vars');
+const routes = require('../api/routes/v1');
 
 /**
  *  EXpress instance
@@ -27,5 +28,9 @@ app.use(helmet());
 
 // enable cors - Cross origin sharing
 app.use(cors());
+
+// mount API routes
+app.use('/api', routes); 
+
 
 module.exports = app;
