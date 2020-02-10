@@ -23,6 +23,10 @@ const app = express();
 // require logging. dev  console | production: file
 app.use(morgan(logs));
 
+// parse body params and attribute them to req.body
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
+
 // secure the app by using various HTPP headers
 app.use(helmet());
 
@@ -30,7 +34,7 @@ app.use(helmet());
 app.use(cors());
 
 // mount API routes
-app.use('/api', routes); 
+app.use('/v1', routes); 
 
 
 module.exports = app;
