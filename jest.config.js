@@ -15,6 +15,6 @@ module.exports = {
   coverageDirectory: 'coverage',
   // The test environment that will be used for testing
   testEnvironment: 'node',
-  globalSetup: './src/tests/setup.js',
-  globalTeardown: './src/tests/teardown.js',
+  globalSetup: './src/api/tests/setup.js',
+  globalTeardown: './src/api/tests/teardown.js',
 };

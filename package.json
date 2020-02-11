@@ -7,7 +7,7 @@
     "start": "forever -c \"node -r ./build/utils/validateEnvironmentVars.js\" ./build/http/start.js",
     "dev": "nodemon -r ./src/api/utils/validateEnvironmentVars.js  --exec babel-node ./src/index.js --watch ./src",
     "clean": "rm -rf ./build && mkdir build",
-    "test": "jest ./src/tests --coverage",
+    "test": "jest ./src/api/tests --coverage",
     "build": "npm run clean && babel ./src -d ./build --copy-files",
     "lint": "eslint ./src"
   },

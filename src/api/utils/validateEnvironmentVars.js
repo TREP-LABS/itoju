@@ -62,7 +62,7 @@ const environmetnVars = {
     severityLevel: 1,
     env: [PRODUCTION],
   },
-  JWT_SECRETE: {
+  JWT_SECRET: {
     severityLevel: 1,
     env: [TEST, DEVELOPMENT, STAGING, PRODUCTION],
   },
