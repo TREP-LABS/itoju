@@ -2,15 +2,12 @@ import testRunner from '../../utils/testRunner';
 
 const userDetails = {
   name: 'Test User',
-  email: 'test@test.com',
   phone: '+2348089084015',
-  gender: 'male',
-  age: '18',
   password: 'Password12',
   confirmPassword: 'Password12',
 };
 
-const createUserPath = '/auth/register';
+const createUserPath = '/v1/auth/register';
 
 const testCases = [
   {
@@ -28,31 +25,27 @@ const testCases = [
         data: {
           _id: expect.any(String),
           name: userDetails.name,
-          email: userDetails.email,
           phone: userDetails.phone,
-          gender: userDetails.gender,
-          age: userDetails.age,
-          confirmedEmail: false,
           confirmedPhone: false,
         },
       },
     },
   },
   {
-    title: 'should fail if user with the same email already exist',
+    title: 'should fail if user with the same phone already exist',
     request: context => ({
       method: 'post',
       path: createUserPath,
       body: {
         ...userDetails,
-        email: context.testGlobals.user.email,
+        phone: context.testGlobals.user.phone,
       },
     }),
     response: {
       status: 409,
       body: {
         success: false,
-        message: 'User with this email already exist',
+        message: 'User with this phone already exist',
       },
     },
   },
@@ -88,42 +81,6 @@ const testCases = [
         message: 'Invalid request data',
         errors: {
           name: ['"name" length must be at least 3 characters long'],
-        },
-      },
-    },
-  },
-  {
-    title: 'should fail if user email is not in request body',
-    request: {
-      method: 'post',
-      path: createUserPath,
-      body: { ...userDetails, email: undefined },
-    },
-    response: {
-      status: 400,
-      body: {
-        success: false,
-        message: 'Invalid request data',
-        errors: {
-          email: ['"email" is required'],
-        },
-      },
-    },
-  },
-  {
-    title: 'should fail if user email is not a valid email address',
-    request: {
-      method: 'post',
-      path: createUserPath,
-      body: { ...userDetails, email: 'testtt.com' },
-    },
-    response: {
-      status: 400,
-      body: {
-        success: false,
-        message: 'Invalid request data',
-        errors: {
-          email: ['"email" must be a valid email'],
         },
       },
     },

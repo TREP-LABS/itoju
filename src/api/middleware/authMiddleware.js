@@ -8,12 +8,11 @@ const auth = async (req, res, next) => {
   const token = req.header('req-token');
   try {
     if (!token || typeof token !== 'string') throw Error('');
-    const decoded = jwt.verify(token, process.env.JWT_SECRETE);
-    const { id, type } = decoded;
-    const user = await db.users.getUser({ _id: id }, type);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { id } = decoded;
+    const user = await db.users.getUser({ _id: id });
     if (!user) throw Error('');
     res.locals.user = user;
-    res.locals.userType = type;
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ success: false, message: 'Token expired' });

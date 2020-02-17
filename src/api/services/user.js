@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
-import emailService from './email';
 import db from '../models';
 
 /**
@@ -14,28 +13,9 @@ import db from '../models';
 const formatUserData = user => JSON.parse(JSON.stringify({
   _id: user._id,
   name: user.name,
-  email: user.email,
   phone: user.phone,
-  gender: user.gender,
-  age: user.age,
-  confirmedEmail: user.confirmedEmail,
   confirmedPhone: user.confirmedPhone,
 }));
-
-/**
- * @description The service function that sends email-address valdiation mail to users
- * @param {object} data The request data
- * @param {function} log Logger utility for logging messages
- */
-const sendEmailValidationMail = (data, log) => {
-  const { name, email } = data;
-  log.debug('Creating a registeration token');
-  const regToken = jwt.sign({ email }, config.jwtSecret);
-  const confirmationUrl = `${config.serverAppUrl}/auth/confirmEmail?regToken=${regToken}`;
-  log.debug('Sending email address validation mail to user');
-  emailService.sendEmailAddresValidation({ name, email }, confirmationUrl)
-    .catch(err => log.error(err, `Error sending email to  ${email}`));
-};
 
 /**
  * @description The service function that creates an hospital user
@@ -47,31 +27,28 @@ const sendEmailValidationMail = (data, log) => {
 const createUser = async (data, log) => {
   log.debug('Executing createUser service');
   const {
-    name, email, phone, gender, age, password,
+    name, phone, password,
   } = data;
-  const lowerCaseEmail = email.toLowerCase();
-  log.debug('Checking if a user with the given email already exist');
+  log.debug('Checking if a user with the given phone number already exist');
   const alreadyExistingUser = await db.users.getUser(
-    { email: lowerCaseEmail },
+    { phone },
   );
   if (alreadyExistingUser) {
-    log.debug('User with the given email already exist, throwing error');
-    throw new ServiceError('User with this email already exist', 409);
+    log.debug('User with the given phone number already exist, throwing error');
+    throw new ServiceError('User with this phone already exist', 409);
   }
   log.debug('Hashing user password');
   const hashedPassword = await bcrypt.hash(password, 10);
   log.debug('Saving user data in database');
   const User = await db.users.createUser({
     name,
-    email: lowerCaseEmail,
     phone,
-    gender,
-    age,
     password: hashedPassword,
-    confirmedEmail: false,
     confirmedPhone: false,
   });
-  sendEmailValidationMail({ name, email }, log);
+  await db.profile.createProfile({
+    userId: User._id,
+  });
   return formatUserData(User);
 };
 
@@ -87,12 +64,12 @@ const createUser = async (data, log) => {
  */
 const login = async (data, log) => {
   log.debug('Executing login service');
-  const { email, password } = data;
+  const { phone, password } = data;
   log.debug('Check if a user with the given email exist');
-  const user = await db.users.getUser({ email: email.toLowerCase() });
+  const user = await db.users.getUser({ phone });
   if (!user || !bcrypt.compareSync(password, user.password)) {
-    log.debug('The given email or password is not correct, throwing error');
-    throw new ServiceError('Incorrect email or password', 400);
+    log.debug('The given phone or password is not correct, throwing error');
+    throw new ServiceError('Incorrect phone or password', 400);
   }
   const userId = user._id;
   log.debug('Create an auth token for this user');

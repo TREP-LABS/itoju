@@ -9,13 +9,9 @@ const createToken = ({ id }) => jwt.sign({ id }, jwtSecret, { expiresIn: '3d' })
 
 let user = {
   id: '',
-  name: 'Test User',
-  email: 'user@test.com',
-  phone: '+2347074175125',
-  age: '20',
-  gender: 'female',
+  name: 'test name',
+  phone: '+2347041900419',
   password: '',
-  confirmedEmail: true,
   confirmedPhone: true,
 };
 

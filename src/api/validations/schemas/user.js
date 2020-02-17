@@ -3,10 +3,7 @@ import common from './common';
 
 const commonUserSchema = {
   name: Joi.string().trim(true).min(3),
-  email: Joi.string().email(),
   phone: Joi.string(),
-  gender: Joi.string(),
-  age: Joi.string(),
   password: Joi.string().trim(true).min(7).pattern(/\d/)
     .pattern(/[A-Z]/)
     .pattern(/[a-z]/)
@@ -22,22 +19,18 @@ const commonUserSchema = {
 
 export const createUser = Joi.object({
   name: commonUserSchema.name.required(),
-  email: commonUserSchema.email.required(),
   phone: commonUserSchema.phone.required(),
-  gender: commonUserSchema.gender.required(),
-  age: commonUserSchema.age.required(),
   password: commonUserSchema.password.required(),
   confirmPassword: commonUserSchema.confirmPassword.required(),
 });
 
 export const updateUser = Joi.object({
   name: commonUserSchema.name,
-  email: commonUserSchema.email,
   phone: commonUserSchema.phone,
 });
 
 export const login = Joi.object({
-  email: commonUserSchema.email.required(),
+  phone: commonUserSchema.phone.required(),
   password: Joi.string().required(),
 });
 
@@ -55,8 +48,3 @@ export const regToken = Joi.string().label('regToken').required()
     'string.base': '"regToken" is a required query parameter',
     'any.required': '"regToken" is a required query parameter',
   });
-
-export const getSingleUser = Joi.object({
-  // Query params
-  email: commonUserSchema.email.required(),
-});

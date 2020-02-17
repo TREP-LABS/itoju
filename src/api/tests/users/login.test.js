@@ -1,11 +1,11 @@
 import testRunner from '../../utils/testRunner';
 
 const loginDetails = user => ({
-  email: user.email,
+  phone: user.phone,
   password: user.stringPass,
 });
 
-const loginPath = '/auth/login';
+const loginPath = '/v1/auth/login';
 
 const testCases = [
   {
@@ -24,9 +24,7 @@ const testCases = [
           user: {
             _id: expect.any(String),
             name: expect.any(String),
-            email: expect.any(String),
             phone: expect.any(String),
-            confirmedEmail: expect.any(Boolean),
             confirmedPhone: expect.any(Boolean),
           },
           token: expect.any(String),
@@ -35,11 +33,11 @@ const testCases = [
     },
   },
   {
-    title: 'should fail if user email is not provided',
+    title: 'should fail if user phone is not provided',
     request: context => ({
       method: 'post',
       path: loginPath,
-      body: { ...loginDetails(context.testGlobals.user), email: undefined },
+      body: { ...loginDetails(context.testGlobals.user), phone: undefined },
     }),
     response: {
       status: 400,
@@ -47,25 +45,7 @@ const testCases = [
         success: false,
         message: 'Invalid request data',
         errors: {
-          email: ['"email" is required'],
-        },
-      },
-    },
-  },
-  {
-    title: 'should fail if user email is not a valid email address',
-    request: context => ({
-      method: 'post',
-      path: loginPath,
-      body: { ...loginDetails(context.testGlobals.user), email: 'testt.com' },
-    }),
-    response: {
-      status: 400,
-      body: {
-        success: false,
-        message: 'Invalid request data',
-        errors: {
-          email: ['"email" must be a valid email'],
+          phone: ['"phone" is required'],
         },
       },
     },
@@ -75,13 +55,13 @@ const testCases = [
     request: context => ({
       method: 'post',
       path: loginPath,
-      body: { ...loginDetails(context.testGlobals.user), email: 'randomerandomeuser@gmail.com' },
+      body: { ...loginDetails(context.testGlobals.user), phone: '07088888888' },
     }),
     response: {
       status: 400,
       body: {
         success: false,
-        message: 'Incorrect email or password',
+        message: 'Incorrect phone or password',
       },
     },
   },
@@ -114,7 +94,7 @@ const testCases = [
       status: 400,
       body: {
         success: false,
-        message: 'Incorrect email or password',
+        message: 'Incorrect phone or password',
       },
     },
   },
