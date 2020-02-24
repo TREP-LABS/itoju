@@ -7,6 +7,7 @@ export default {
   port: process.env.PORT,
   dbUrl: process.env.DB_DEV_URL,
   jwtSecret: process.env.JWT_SECRET,
+  smsKey: process.env.SMS_TEST_KEY,
   serverAppUrl: process.env.SERVER_APP_URL,
   bcryptHashSaltRounds: process.env.BCRYPT_HASH_SALT_ROUNDS,
   mailgun: {

@@ -36,6 +36,21 @@ const login = catchControllerError('Login', async (req, res) => {
 
 
 /**
+ * @description send password reset token to user
+ * @param {object} req Express request object
+ * @param {object} res Express response object
+ */
+const resetPassword = catchControllerError('resetPassword', async (req, res) => {
+  const { log } = res.locals;
+  const requestData = validate(schemas.resetPassword, req.params);
+  if (requestData.error) return invalidReqeust(res, { errors: requestData.error });
+
+  await userService.resetPassword(requestData, log);
+  log.debug('resetPassword service executed without error, sending back a success response');
+  return res.status(200).json({ success: true, message: 'Token sent' });
+});
+
+/**
  * @description Update user password controller
  * @param {object} req Express request object
  * @param {object} res Express response object
@@ -53,5 +68,6 @@ const updatePassword = catchControllerError('UpdatePassword', async (req, res) =
 export default {
   login,
   createUser,
+  resetPassword,
   updatePassword,
 };

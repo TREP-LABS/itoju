@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import axios from 'axios';
+import phoneToken from 'generate-sms-verification-code';
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
 import db from '../models';
@@ -87,6 +88,49 @@ const login = async (data, log) => {
  * @param {string} data.userType The user type
  * @throws {Error} Throws an error is operations fails
  */
+const resetPassword = async (data, log) => {
+  log.debug('Executing resetPassword service');
+  const {
+    phoneNumber,
+  } = data;
+  const user = await db.users.getUser({ phone: phoneNumber });
+  if (!user) {
+    log.debug('The user does not exist');
+    throw new ServiceError('User does not exist', 404);
+  }
+  const generatedToken = phoneToken(6, { type: 'number' });
+  console.log(generatedToken);
+  // Send SMS to user
+  const pa = await db.users.resetPassword({ phone: phoneNumber }, { token: generatedToken });
+  await axios.post('https://termii.com/api/sms/send', {
+    to: '2348089084015',
+    from: 'Trep labs',
+    sms: `Your verification code is: ${generatedToken}`,
+    type: 'plain',
+    channel: 'generic',
+    api_key: config.smsKey,
+  }).then((response) => {
+    log(response);
+  }).catch((error) => {
+    if (error) {
+      console.log(error);
+      throw new ServiceError('Unable to send verification', 404);
+    }
+  }).finally(() => {
+    return pa;
+  });
+};
+
+/**
+ * @description Updates a user password in the database
+ * @param {object} data The data required to execute this service
+ * @param {string} data.formerPassword The user former password
+ * @param {string} data.formerHashedPassword The user former hashed password
+ * @param {string} data.newPassword The new password to set for the user
+ * @param {string} data.userId The user id
+ * @param {string} data.userType The user type
+ * @throws {Error} Throws an error is operations fails
+ */
 const updatePassword = async (data, log) => {
   log.debug('Executing updatePassword service');
   const {
@@ -132,5 +176,6 @@ export default {
   login,
   createUser,
   updatePassword,
+  resetPassword,
   confirmUserAccount,
 };

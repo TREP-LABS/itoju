@@ -43,6 +43,10 @@ export const updatePassword = Joi.object({
   userId: common.validResourceId.message('"userId" in query params is not valid'),
 });
 
+export const resetPassword = Joi.object({
+  phoneNumber: Joi.string().required(),
+});
+
 export const regToken = Joi.string().label('regToken').required()
   .messages({
     'string.base': '"regToken" is a required query parameter',

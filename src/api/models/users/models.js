@@ -9,6 +9,17 @@ const userSchema = new Schema({
   confirmedPhone: { type: Boolean, required: true },
 });
 
+const resetPasswordSchema = new Schema({
+  phone: { type: String, required: true },
+  token: { type: Number, required: true },
+});
+
 userSchema.index({ phone: true }, { background: false });
 
-export default mongoose.model('user', userSchema);
+const user = mongoose.model('user', userSchema);
+const resetPassword = mongoose.model('resetPassword', resetPasswordSchema);
+
+export default {
+  user,
+  resetPassword,
+};
