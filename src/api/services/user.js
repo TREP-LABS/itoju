@@ -139,13 +139,8 @@ const validateOtp = async (data, log) => {
 const updatePassword = async (data, log) => {
   log.debug('Executing updatePassword service');
   const {
-    formerPassword, newPassword, userId,
+    formerPassword, newPassword, user,
   } = data;
-  const user = await db.users.getUser({ _id: userId });
-  if (!user) {
-    log.debug('The user to update does not exist');
-    throw new ServiceError('User does not exist', 404);
-  }
   if (!bcrypt.compareSync(formerPassword, user.password)) {
     log.debug('The formerPassword is not correct, throwing error');
     throw new ServiceError('Former password is not correct', 400);
@@ -153,7 +148,7 @@ const updatePassword = async (data, log) => {
   log.debug('Hashing new user password');
   const newHashedPassword = await bcrypt.hash(newPassword, 10);
   log.debug('Updating user password in db');
-  await db.users.updateUser({ _id: userId }, { password: newHashedPassword });
+  await db.users.updateUser({ _id: user._id }, { password: newHashedPassword });
 };
 
 const newPassword = async (data, log) => {
