@@ -14,7 +14,7 @@ const symptomMatchSchema = new Schema({
     type: Schema.Types.ObjectId,
   },
   diseaseId: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId, required: true, ref: 'disease',
   },
 });
 

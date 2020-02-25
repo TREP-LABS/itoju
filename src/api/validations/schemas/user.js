@@ -1,5 +1,4 @@
 import Joi from '@hapi/joi';
-import common from './common';
 
 const commonUserSchema = {
   name: Joi.string().trim(true).min(3),
