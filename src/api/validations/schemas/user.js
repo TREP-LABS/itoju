@@ -1,5 +1,4 @@
 import Joi from '@hapi/joi';
-import common from './common';
 
 const commonUserSchema = {
   name: Joi.string().trim(true).min(3),
@@ -39,8 +38,9 @@ export const updatePassword = Joi.object({
   newPassword: commonUserSchema.password.messages({
     'string.pattern.base': '"newPassword" must be at least 7 character mix of capital, small letters with numbers',
   }).required(),
-  // Query params
-  userId: common.validResourceId.message('"userId" in query params is not valid'),
+  confirmPassword: Joi.string().valid(Joi.ref('newPassword')).messages({
+    'any.only': '"confirmPassword" must match the newPassword value',
+  }),
 });
 
 export const newPassword = Joi.object({

@@ -46,11 +46,11 @@ const validateOtp = catchControllerError('validateOtp', async (req, res) => {
 });
 
 const updatePassword = catchControllerError('UpdatePassword', async (req, res) => {
-  const { log } = res.locals;
-  const requestData = validate(schemas.updatePassword, { ...req.body, ...req.params }, res);
+  const { log, user } = res.locals;
+  const requestData = validate(schemas.updatePassword, req.body);
   if (requestData.error) return invalidReqeust(res, { errors: requestData.error });
 
-  await userService.updatePassword(requestData, log);
+  await userService.updatePassword({ ...requestData, user }, log);
   log.debug('UpdatePassword service executed without error, sending back a success response');
   return res.status(204).json({});
 });
