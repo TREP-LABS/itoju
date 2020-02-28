@@ -97,8 +97,9 @@ const resetPassword = async (data, log) => {
   }
   const generatedToken = phoneToken(6, { type: 'number' });
   // Send SMS to user
-  const pa = await db.users.resetPassword({ phone: phoneNumber }, { token: generatedToken });
-  return pa;
+  console.log(generatedToken.toString());  
+  const hashedToken = await bcrypt.hash(generatedToken.toString(), 10);
+  await db.users.resetPassword({ phone: phoneNumber }, { token: hashedToken });
 };
 
 /**
@@ -116,8 +117,8 @@ const validateOtp = async (data, log) => {
   const {
     phoneNumber, otp,
   } = data;
-  const validOtp = await db.users.getOtp({ phone: phoneNumber, token: otp });
-  if (!validOtp) {
+  const validOtp = await db.users.getOtp({ phone: phoneNumber });
+  if (!validOtp || !bcrypt.compareSync(otp.toString(), validOtp.token)) {
     log.debug('The token is invalid');
     throw new ServiceError('Invalid token', 400);
   }
