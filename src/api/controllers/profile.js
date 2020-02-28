@@ -32,7 +32,20 @@ const updateProfile = catchControllerError('updateProfile', async (req, res) => 
   return res.status(200).json({ success: true, message: 'profile updated', data: profile });
 });
 
+/**
+ * @description Update user profile image
+ * @param {object} req Express request object
+ * @param {object} res Express response object
+ */
+const uploadImage = catchControllerError('uploadImage', async (req, res) => {
+  const { log, user } = res.locals;
+  const uploads = await profileService.uploadImage({ image: req.file, user }, log);
+  log.debug('uploadImage service executed without error, sending back a success response');
+  return res.status(200).json({ success: true, message: 'uploaded image', data: uploads });
+});
+
 export default {
   getProfile,
   updateProfile,
+  uploadImage,
 };
