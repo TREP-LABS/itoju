@@ -27,7 +27,20 @@ const updateProfile = async (data, user, log) => {
   return profile;
 };
 
+const uploadImage = async (data, log) => {
+  const { image, user } = data;
+  log.debug('uploading image');
+
+  log.debug('Updating user profile');
+  const profile = await db.profile.updateProfile(
+    { userId: user._id }, { image: image.filename },
+  );
+  log.debug('Sending updated profile to the user');
+  return profile;
+};
+
 export default {
   getProfile,
   updateProfile,
+  uploadImage,
 };
