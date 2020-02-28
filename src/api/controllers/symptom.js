@@ -44,7 +44,7 @@ const matchSymptom = catchControllerError('matchSymptom', async (req, res) => {
 
   const match = await symptomService.matchSymptom(requestData, log);
   log.debug('matchSymptom service executed without error, sending back a success response');
-  return res.status(200).json({ success: true, message: 'Symptom matched', data: match });
+  return res.status(201).json({ success: true, message: 'Symptom matched', data: match });
 });
 
 export default {

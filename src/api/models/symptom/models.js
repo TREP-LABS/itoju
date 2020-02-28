@@ -11,15 +11,16 @@ const symptomSchema = new Schema({
 
 const symptomMatchSchema = new Schema({
   symptomId: {
-    type: Schema.Types.ObjectId, required: true, unique: true, ref: 'symptom',
+    type: Schema.Types.ObjectId,
   },
   diseaseId: {
-    type: Schema.Types.ObjectId, required: true, unique: true, ref: 'disease',
-  }
-})
+    type: Schema.Types.ObjectId,
+  },
+});
 
-const symptomMatch = mongoose.model('symptomMatch', symptomMatchSchema)
+const symptomMatch = mongoose.model('symptomMatch', symptomMatchSchema);
 const symptom = mongoose.model('symptom', symptomSchema);
+
 export default {
   symptom, symptomMatch,
 };

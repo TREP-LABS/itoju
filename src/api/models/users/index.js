@@ -12,7 +12,7 @@ import userModel from './models';
  * @returns {Promise} A promise that resolves or reject to the result of the database operation
  */
 const createUser = async (userData) => {
-  const Model = userModel;
+  const Model = userModel.user;
   return new Model(userData).save();
 };
 
@@ -24,7 +24,12 @@ const createUser = async (userData) => {
  * @returns {Promise} A promise that resolves or reject to the result of the database operation
  */
 const getUser = async (userMatch) => {
-  const Model = userModel;
+  const Model = userModel.user;
+  return Model.findOne(userMatch);
+};
+
+const getOtp = async (userMatch) => {
+  const Model = userModel.resetPassword;
   return Model.findOne(userMatch);
 };
 
@@ -37,7 +42,7 @@ const getUser = async (userMatch) => {
  * @returns {Promise} A promise that resolves or reject to the result of the database operation
  */
 const getAllUsers = async (userMatch, userType, userFields) => {
-  const Model = userModel;
+  const Model = userModel.user;
   const projection = userFields ? userFields.join(' ') : null;
   return Model.find(userMatch, projection);
 };
@@ -51,8 +56,13 @@ const getAllUsers = async (userMatch, userType, userFields) => {
  * @returns {Promise} A promise that resolves or reject to the result of the database operation
  */
 const updateUser = async (userMatch, update) => {
-  const Model = userModel;
+  const Model = userModel.user;
   return Model.findOneAndUpdate(userMatch, update, { new: true });
+};
+
+const resetPassword = async (userMatch, update) => {
+  const Model = userModel.resetPassword;
+  return Model.findOneAndUpdate(userMatch, update, { new: true, upsert: true });
 };
 
 export default {
@@ -60,4 +70,6 @@ export default {
   getUser,
   getAllUsers,
   updateUser,
+  getOtp,
+  resetPassword,
 };

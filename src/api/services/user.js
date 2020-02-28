@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import phoneToken from 'generate-sms-verification-code';
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
 import db from '../models';
@@ -87,6 +87,55 @@ const login = async (data, log) => {
  * @param {string} data.userType The user type
  * @throws {Error} Throws an error is operations fails
  */
+const resetPassword = async (data, log) => {
+  log.debug('Executing resetPassword service');
+  const { phoneNumber } = data;
+  const user = await db.users.getUser({ phone: phoneNumber });
+  if (!user) {
+    log.debug('The user does not exist');
+    throw new ServiceError('User does not exist', 404);
+  }
+  const generatedToken = phoneToken(6, { type: 'number' });
+  // Send SMS to user
+  const pa = await db.users.resetPassword({ phone: phoneNumber }, { token: generatedToken });
+  return pa;
+};
+
+/**
+ * @description Updates a user password in the database
+ * @param {object} data The data required to execute this service
+ * @param {string} data.formerPassword The user former password
+ * @param {string} data.formerHashedPassword The user former hashed password
+ * @param {string} data.newPassword The new password to set for the user
+ * @param {string} data.userId The user id
+ * @param {string} data.userType The user type
+ * @throws {Error} Throws an error is operations fails
+ */
+const validateOtp = async (data, log) => {
+  log.debug('Executing validateResetPassword service');
+  const {
+    phoneNumber, otp,
+  } = data;
+  const validOtp = await db.users.getOtp({ phone: phoneNumber, token: otp });
+  if (!validOtp) {
+    log.debug('The token is invalid');
+    throw new ServiceError('Invalid token', 400);
+  }
+  const user = await db.users.getUser({ phone: phoneNumber });
+  const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: 5 * 60 });
+  return { token };
+};
+
+/**
+ * @description Updates a user password in the database
+ * @param {object} data The data required to execute this service
+ * @param {string} data.formerPassword The user former password
+ * @param {string} data.formerHashedPassword The user former hashed password
+ * @param {string} data.newPassword The new password to set for the user
+ * @param {string} data.userId The user id
+ * @param {string} data.userType The user type
+ * @throws {Error} Throws an error is operations fails
+ */
 const updatePassword = async (data, log) => {
   log.debug('Executing updatePassword service');
   const {
@@ -105,6 +154,15 @@ const updatePassword = async (data, log) => {
   const newHashedPassword = await bcrypt.hash(newPassword, 10);
   log.debug('Updating user password in db');
   await db.users.updateUser({ _id: userId }, { password: newHashedPassword });
+};
+
+const newPassword = async (data, log) => {
+  log.debug('Executing newPassword service');
+  const { password, user } = data;
+  log.debug('Hashing new user password');
+  const newHashedPassword = await bcrypt.hash(password, 10);
+  log.debug('Updating user password in db');
+  await db.users.updateUser({ _id: user._id }, { password: newHashedPassword });
 };
 
 /**
@@ -132,5 +190,8 @@ export default {
   login,
   createUser,
   updatePassword,
+  newPassword,
+  resetPassword,
+  validateOtp,
   confirmUserAccount,
 };
