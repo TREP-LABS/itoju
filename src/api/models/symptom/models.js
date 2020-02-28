@@ -18,7 +18,7 @@ const symptomMatchSchema = new Schema({
   },
 });
 
-const symptomMatch = mongoose.model('symptomMatch', symptomMatchSchema)
+const symptomMatch = mongoose.model('symptomMatch', symptomMatchSchema);
 const symptom = mongoose.model('symptom', symptomSchema);
 
 export default {

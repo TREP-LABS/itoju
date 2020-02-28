@@ -43,8 +43,20 @@ export const updatePassword = Joi.object({
   userId: common.validResourceId.message('"userId" in query params is not valid'),
 });
 
+export const newPassword = Joi.object({
+  password: commonUserSchema.password.messages({
+    'string.pattern.base': '"Password" must be at least 7 character mix of capital, small letters with numbers',
+  }).required(),
+  confirmPassword: commonUserSchema.confirmPassword.required(),
+});
+
 export const resetPassword = Joi.object({
   phoneNumber: Joi.string().required(),
+});
+
+export const validateOtp = Joi.object({
+  phoneNumber: Joi.string().required(),
+  otp: Joi.number().required(),
 });
 
 export const regToken = Joi.string().label('regToken').required()

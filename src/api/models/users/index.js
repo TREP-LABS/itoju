@@ -28,6 +28,11 @@ const getUser = async (userMatch) => {
   return Model.findOne(userMatch);
 };
 
+const getOtp = async (userMatch) => {
+  const Model = userModel.resetPassword;
+  return Model.findOne(userMatch);
+};
+
 /**
  * @description Get multiple users from the database
  * @param {object} userMatch An object describing how to select the users to be fetched
@@ -65,5 +70,6 @@ export default {
   getUser,
   getAllUsers,
   updateUser,
+  getOtp,
   resetPassword,
 };
