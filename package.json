@@ -1,11 +1,11 @@
 {
-  "name": "Itoju",
+  "name": "itoju",
   "version": "1.0.0",
   "description": "health care system",
   "main": "app.js",
   "scripts": {
     "start": "forever -c \"node -r ./build/utils/validateEnvironmentVars.js\" ./build/http/start.js",
-    "dev": "nodemon -r ./src/api/utils/validateEnvironmentVars.js  --exec babel-node ./src/index.js --watch ./src",
+    "dev": "nodemon -r ./src/api/utils/validateEnvironmentVars.js --exec babel-node ./src/index.js --watch ./src",
     "clean": "rm -rf ./build && mkdir build",
     "test": "jest ./src/api/tests --coverage",
     "build": "npm run clean && babel ./src -d ./build --copy-files",
@@ -24,7 +24,6 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.5",
     "@hapi/joi": "^16.1.8",
-    "axios": "^0.19.2",
     "bcrypt": "^3.0.6",
     "bunyan": "^1.8.12",
     "cloudinary": "^1.19.0",
@@ -42,6 +41,7 @@
     "nodemailer": "^6.3.0",
     "nodemailer-mailgun-transport": "^1.4.0",
     "nodemon": "^1.19.1",
+    "twilio": "^3.39.5",
     "uuid": "^3.3.3",
     "validator": "^11.1.0"
   },

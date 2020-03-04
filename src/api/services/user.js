@@ -4,6 +4,7 @@ import phoneToken from 'generate-sms-verification-code';
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
 import db from '../models';
+import sms from './sms';
 
 /**
  * @description Format the user data to be returned to the client
@@ -97,7 +98,11 @@ const resetPassword = async (data, log) => {
   }
   const generatedToken = phoneToken(6, { type: 'number' });
   // Send SMS to user
-  console.log(generatedToken.toString());  
+  await sms.sendSms({
+    from: '+19014684324',
+    to: '+2348089084015',
+    body: `Your verification code is ${generatedToken}`,
+  });
   const hashedToken = await bcrypt.hash(generatedToken.toString(), 10);
   await db.users.resetPassword({ phone: phoneNumber }, { token: hashedToken });
 };
