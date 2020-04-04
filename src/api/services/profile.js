@@ -1,5 +1,6 @@
 import db from '../models/functions';
 import model from '../models/schemas/profile.model';
+import userModel from '../models/schemas/user.model';
 
 const getProfile = async (user, log) => {
   log.debug('getting user profile');
@@ -16,16 +17,29 @@ const getProfile = async (user, log) => {
 };
 
 const updateProfile = async (data, user, log) => {
-  const { email, age, gender } = data;
+  const {
+    email, age, gender, name, phone,
+  } = data;
 
   const update = JSON.parse(JSON.stringify({ email, age, gender }));
+  const updateUser = JSON.parse(JSON.stringify({ name, phone }));
 
   log.debug('Updating user profile');
   const profile = await db.updateOne(
     model, { userId: user._id }, update,
   );
+  const updatedUser = await db.updateOne(
+    userModel.user,
+    { _id: user._id }, updateUser,
+  );
   log.debug('Sending updated profile to the user');
-  return profile;
+  return {
+    name: updatedUser.name,
+    phone: updatedUser.phone,
+    email: profile.email,
+    age: profile.age,
+    gender: profile.gender,
+  };
 };
 
 const uploadImage = async (data, log) => {
