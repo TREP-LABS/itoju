@@ -102,14 +102,14 @@ const resetPassword = async (data, log) => {
   // Send SMS to user
   await sms.sendSms({
     from: '+19014684324',
-    to: phoneNumber,
-    body: `Your verification code is ${generatedToken}`,
+    to: '+2348089084015',
+    body: `Usr ${generatedToken} as your verification code.`,
   });
   const hashedToken = await bcrypt.hash(generatedToken.toString(), 10);
   await db.updateOne(
     model.resetPassword,
     { phone: phoneNumber },
-    { token: hashedToken },
+    { token: hashedToken, used: false },
     { upsert: true },
   );
 };
@@ -134,6 +134,16 @@ const validateOtp = async (data, log) => {
     log.debug('The token is invalid');
     throw new ServiceError('Invalid token', 400);
   }
+
+  if (validOtp.used) {
+    throw new ServiceError('token used', 400);
+  }
+  await db.updateOne(
+    model.resetPassword,
+    { phone: phoneNumber },
+    { used: true },
+    { upsert: true },
+  );
   const user = await db.getOne(model.user, { phone: phoneNumber });
   const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: 5 * 60 });
   return { token };
@@ -170,7 +180,7 @@ const newPassword = async (data, log) => {
   log.debug('Hashing new user password');
   const newHashedPassword = await bcrypt.hash(password, 10);
   log.debug('Updating user password in db');
-  await db.users.updateOne(model.user, { _id: user._id }, { password: newHashedPassword });
+  await db.updateOne(model.user, { _id: user._id }, { password: newHashedPassword });
 };
 
 /**

@@ -12,6 +12,7 @@ const userSchema = new Schema({
 const resetPasswordSchema = new Schema({
   phone: { type: String, required: true },
   token: { type: String, required: true },
+  used: { type: Boolean, required: true },
 });
 
 userSchema.index({ phone: true }, { background: false });
