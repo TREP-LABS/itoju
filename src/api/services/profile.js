@@ -1,8 +1,9 @@
-import db from '../models';
+import db from '../models/functions';
+import model from '../models/schemas/profile.model';
 
 const getProfile = async (user, log) => {
   log.debug('getting user profile');
-  const profile = await db.profile.getProfile({ userId: user._id });
+  const profile = await db.getOne(model, { userId: user._id }, { populate: { schema: 'userId' } });
   log.debug('returning profile to user');
   return {
     name: profile.userId.name,
@@ -20,8 +21,8 @@ const updateProfile = async (data, user, log) => {
   const update = JSON.parse(JSON.stringify({ email, age, gender }));
 
   log.debug('Updating user profile');
-  const profile = await db.profile.updateProfile(
-    { userId: user._id }, update,
+  const profile = await db.updateOne(
+    model, { userId: user._id }, update,
   );
   log.debug('Sending updated profile to the user');
   return profile;
@@ -32,8 +33,8 @@ const uploadImage = async (data, log) => {
   log.debug('uploading image');
 
   log.debug('Updating user profile');
-  const profile = await db.profile.updateProfile(
-    { userId: user._id }, { image: image.filename },
+  const profile = await db.updateOne(
+    model, { userId: user._id }, { image: image.filename },
   );
   log.debug('Sending updated profile to the user');
   return profile;

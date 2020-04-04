@@ -1,10 +1,11 @@
-import db from '../models';
+import db from '../models/functions';
+import model from '../models/schemas/disease.model';
 import ServiceError from './common/serviceError';
 
 const createDisease = async (data, log) => {
   log.debug('Executing createDisease service');
   const { name, description } = data;
-  const existingDisease = await db.symptom.getDisease({ name });
+  const existingDisease = await db.getOne(model, { name });
   if (existingDisease) {
     log.debug('Disease already exist, throwing error');
     throw new ServiceError('Disease already exist', 409);
@@ -13,7 +14,7 @@ const createDisease = async (data, log) => {
   const diseaseDetails = { name, description };
   const purifyDiseaseDetails = JSON.parse(JSON.stringify(diseaseDetails));
   log.debug('creating disease');
-  const disease = await db.disease.createDisease(purifyDiseaseDetails);
+  const disease = await db.create(model, purifyDiseaseDetails);
   log.debug('Returning created disease to user');
   return disease;
 };
@@ -21,7 +22,7 @@ const createDisease = async (data, log) => {
 const getDisease = async (data, log) => {
   const { name } = data;
   log.debug('getting Disease');
-  const disease = await db.disease.getDisease({ name });
+  const disease = await db.getOne(model, { name });
   log.debug('returning disease to user');
   return disease;
 };
@@ -32,8 +33,8 @@ const updateDisease = async (data, log) => {
   const update = JSON.parse(JSON.stringify({ name, description }));
 
   log.debug('Updating disease');
-  const disease = await db.disease.updateDisease(
-    { _id: diseaseId }, update,
+  const disease = await db.updateOne(
+    model, { _id: diseaseId }, update,
   );
   log.debug('Sending updated disease to the user');
   return disease;

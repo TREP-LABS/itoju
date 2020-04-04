@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import db from '../models';
+import db from '../models/functions';
+import model from '../models/schemas/user.model';
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const auth = async (req, res, next) => {
     if (!token || typeof token !== 'string') throw Error('');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { id } = decoded;
-    const user = await db.users.getUser({ _id: id });
+    const user = await db.getOne(model.user, { _id: id });
     if (!user) throw Error('');
     res.locals.user = user;
   } catch (err) {

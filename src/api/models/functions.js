@@ -1,24 +1,19 @@
-import model from './models/index';
+const create = async (Model, data) => new Model(data).save();
 
-const findModel = (modelName) => {
-  let mo;
-  switch (modelName) {
-    case 'profile':
-      mo = model.profile;
-      break;
-
-    default:
-      break;
+const getOne = async (model, data, option) => {
+  if (option && option.populate) {
+    return (model.findOne(data).populate(option.populate.schema));
   }
-  return mo;
+  return (model.findOne(data));
 };
 
-const findOne = async (modelName, data) => {
-  // eslint-disable-next-line
-  const Model = findModel(modelName);
-  return (Model.findOne(data));
-};
+const updateOne = async (model, match, update, option) => model.findOneAndUpdate(match, update, {
+  new: true,
+  upsert: option && option.upsert ? option.upsert : false,
+});
 
 export default {
-  findOne,
+  create,
+  getOne,
+  updateOne,
 };

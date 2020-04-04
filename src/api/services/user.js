@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 import phoneToken from 'generate-sms-verification-code';
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
-import db from '../models';
+import db from '../models/functions';
+import model from '../models/schemas/user.model';
+import profileModel from '../models/schemas/profile.model';
 import sms from './sms';
 
 /**
@@ -31,8 +33,8 @@ const createUser = async (data, log) => {
     name, phone, password,
   } = data;
   log.debug('Checking if a user with the given phone number already exist');
-  const alreadyExistingUser = await db.users.getUser(
-    { phone },
+  const alreadyExistingUser = await db.getOne(
+    model.user, { phone },
   );
   if (alreadyExistingUser) {
     log.debug('User with the given phone number already exist, throwing error');
@@ -41,13 +43,13 @@ const createUser = async (data, log) => {
   log.debug('Hashing user password');
   const hashedPassword = await bcrypt.hash(password, 10);
   log.debug('Saving user data in database');
-  const User = await db.users.createUser({
+  const User = await db.create(model.user, {
     name,
     phone,
     password: hashedPassword,
     confirmedPhone: false,
   });
-  await db.profile.createProfile({
+  await db.create(profileModel, {
     userId: User._id,
   });
   return formatUserData(User);
@@ -67,7 +69,7 @@ const login = async (data, log) => {
   log.debug('Executing login service');
   const { phone, password } = data;
   log.debug('Check if a user with the given email exist');
-  const user = await db.users.getUser({ phone });
+  const user = await db.getOne(model.user, { phone });
   if (!user || !bcrypt.compareSync(password, user.password)) {
     log.debug('The given phone or password is not correct, throwing error');
     throw new ServiceError('Incorrect phone or password', 400);
@@ -91,7 +93,7 @@ const login = async (data, log) => {
 const resetPassword = async (data, log) => {
   log.debug('Executing resetPassword service');
   const { phoneNumber } = data;
-  const user = await db.users.getUser({ phone: phoneNumber });
+  const user = await db.getOne(model.user, { phone: phoneNumber });
   if (!user) {
     log.debug('The user does not exist');
     throw new ServiceError('User does not exist', 404);
@@ -100,11 +102,16 @@ const resetPassword = async (data, log) => {
   // Send SMS to user
   await sms.sendSms({
     from: '+19014684324',
-    to: '+2348089084015',
+    to: phoneNumber,
     body: `Your verification code is ${generatedToken}`,
   });
   const hashedToken = await bcrypt.hash(generatedToken.toString(), 10);
-  await db.users.resetPassword({ phone: phoneNumber }, { token: hashedToken });
+  await db.updateOne(
+    model.resetPassword,
+    { phone: phoneNumber },
+    { token: hashedToken },
+    { upsert: true },
+  );
 };
 
 /**
@@ -122,12 +129,12 @@ const validateOtp = async (data, log) => {
   const {
     phoneNumber, otp,
   } = data;
-  const validOtp = await db.users.getOtp({ phone: phoneNumber });
+  const validOtp = await db.getOne(model.resetPassword, { phone: phoneNumber });
   if (!validOtp || !bcrypt.compareSync(otp.toString(), validOtp.token)) {
     log.debug('The token is invalid');
     throw new ServiceError('Invalid token', 400);
   }
-  const user = await db.users.getUser({ phone: phoneNumber });
+  const user = await db.getOne(model.user, { phone: phoneNumber });
   const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: 5 * 60 });
   return { token };
 };
@@ -154,7 +161,7 @@ const updatePassword = async (data, log) => {
   log.debug('Hashing new user password');
   const newHashedPassword = await bcrypt.hash(newPassword, 10);
   log.debug('Updating user password in db');
-  await db.users.updateUser({ _id: user._id }, { password: newHashedPassword });
+  await db.updateOne(model.user, { _id: user._id }, { password: newHashedPassword });
 };
 
 const newPassword = async (data, log) => {
@@ -163,7 +170,7 @@ const newPassword = async (data, log) => {
   log.debug('Hashing new user password');
   const newHashedPassword = await bcrypt.hash(password, 10);
   log.debug('Updating user password in db');
-  await db.users.updateUser({ _id: user._id }, { password: newHashedPassword });
+  await db.users.updateOne(model.user, { _id: user._id }, { password: newHashedPassword });
 };
 
 /**
@@ -178,9 +185,9 @@ const confirmUserAccount = async (regToken, log) => {
   try {
     log.debug('Verify the registeration token');
     const decoded = jwt.verify(regToken, config.jwtSecrete);
-    const { email, userType } = decoded;
+    const { email } = decoded;
     log.debug('Registeration token is valid, update user information in the DB');
-    return db.users.updateUser({ email }, { confirmedEmail: true }, userType);
+    return db.users.updateOne(model.user, { email }, { confirmedEmail: true });
   } catch (err) {
     log.debug('Unable to verify the registeration token, throwing error');
     throw new ServiceError('Registeration token not valid', 400);

@@ -46,12 +46,12 @@
     "validator": "^11.1.0"
   },
   "devDependencies": {
-    "core-js": "^3.3.6",
+    "core-js": "^3.6.4",
     "coveralls": "^3.0.6",
     "eslint": "^5.16.0",
-    "husky": "^3.0.7",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2",
+    "husky": "^3.0.7",
     "jest": "^24.9.0",
     "supertest": "^4.0.2"
   },
