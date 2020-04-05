@@ -161,5 +161,4 @@ const testCases = [
   },
 ];
 
-
 testRunner(testCases, 'Create user', {});

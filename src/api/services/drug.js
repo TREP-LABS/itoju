@@ -1,5 +1,5 @@
 import model from '../models/schemas/drug.model';
-import db from '../models/functions';
+import db from '../models';
 import ServiceError from './common/serviceError';
 
 const createDrug = async (data, log) => {

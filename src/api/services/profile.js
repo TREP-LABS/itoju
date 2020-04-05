@@ -1,4 +1,4 @@
-import db from '../models/functions';
+import db from '../models';
 import model from '../models/schemas/profile.model';
 import userModel from '../models/schemas/user.model';
 

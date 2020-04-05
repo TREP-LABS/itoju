@@ -1,4 +1,4 @@
-import db from '../models/functions';
+import db from '../models';
 import model from '../models/schemas/symtoms.model';
 import ServiceError from './common/serviceError';
 

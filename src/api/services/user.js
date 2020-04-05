@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import phoneToken from 'generate-sms-verification-code';
 import ServiceError from './common/serviceError';
 import config from '../../config/vars';
-import db from '../models/functions';
+import db from '../models';
 import model from '../models/schemas/user.model';
 import profileModel from '../models/schemas/profile.model';
 import sms from './sms';
@@ -102,8 +102,8 @@ const resetPassword = async (data, log) => {
   // Send SMS to user
   await sms.sendSms({
     from: '+19014684324',
-    to: '+2348089084015',
-    body: `Usr ${generatedToken} as your verification code.`,
+    to: phoneNumber,
+    body: `Use ${generatedToken} as your verification code.`,
   });
   const hashedToken = await bcrypt.hash(generatedToken.toString(), 10);
   await db.updateOne(

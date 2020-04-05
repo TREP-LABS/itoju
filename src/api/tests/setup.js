@@ -2,6 +2,7 @@ import '../utils/validateEnvironmentVars';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import db from '../models';
+import model from '../models/schemas/user.model';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -20,18 +21,22 @@ export default async () => {
   const hashedpass = await bcrypt.hash(
     stringPass, Number.parseInt(process.env.BCRYPT_HASH_SALT_ROUNDS, 10),
   );
-  const { _id: userId } = await db.users.createUser(
-    { ...user, password: hashedpass },
-  );
+  try {
+    const { _id: userId } = await db.create(
+      model.user, { ...user, password: hashedpass },
+    );
 
-  user = {
-    ...user,
-    id: userId,
-    password: hashedpass,
-    stringPass,
-    authToken: createToken({ id: userId }),
-  };
 
+    user = {
+      ...user,
+      id: userId,
+      password: hashedpass,
+      stringPass,
+      authToken: createToken({ id: userId }),
+    };
+  } catch (error) {
+    console.log(error);
+  }
   process.env.TEST_GLOBALS = JSON.stringify({
     user,
   });
